@@ -2,33 +2,29 @@ let currentDomain = null;
 let timers = {}; // Stores time spent for each domain
 let startTime = null;
 
-chrome.tabs.onActivated.addListener(async (activeInfo) => {
-  await handleTabUpdate();
+chrome.tabs.onActivated.addListener(() => handleTabUpdate());
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete') handleTabUpdate();
 });
 
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') {
-    await handleTabUpdate();
-  }
-});
+function handleTabUpdate() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs[0] || !tabs[0].url) return;
 
-async function handleTabUpdate() {
-  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tabs[0] || !tabs[0].url) return;
+    const url = new URL(tabs[0].url);
+    const domain = url.hostname;
 
-  const url = new URL(tabs[0].url);
-  const domain = url.hostname;
+    if (currentDomain && currentDomain !== domain) {
+      updateTimeForDomain(currentDomain);
+    }
 
-  if (currentDomain && currentDomain !== domain) {
-    updateTimeForDomain(currentDomain); // Pause the current domain's timer
-  }
+    if (!timers[domain]) {
+      timers[domain] = 0; // Initialize time for the new domain
+    }
 
-  if (!timers[domain]) {
-    timers[domain] = 0; // Initialize timer for the new domain
-  }
-
-  currentDomain = domain;
-  startTime = Date.now(); // Start timing the new domain
+    currentDomain = domain;
+    startTime = Date.now(); // Start timing for the new domain
+  });
 }
 
 function updateTimeForDomain(domain) {
@@ -40,7 +36,7 @@ function updateTimeForDomain(domain) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'getTimers') {
-    updateTimeForDomain(currentDomain);
+    if (currentDomain) updateTimeForDomain(currentDomain); // Update the current domain's time
     sendResponse(timers);
   }
 });
