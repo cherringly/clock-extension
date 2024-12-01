@@ -1,33 +1,45 @@
-let activeDomain = null;
+let activeTabId = null;
 let timers = {};
 let intervalId = null;
 
-chrome.tabs.onActivated.addListener(() => updateActiveDomain());
-chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.active) {
-    updateActiveDomain();
-  }
+// Listen for tab activation
+chrome.tabs.onActivated.addListener(updateActiveTab);
+
+// Listen for tab updates
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.active) updateActiveTab();
 });
 
-function updateActiveDomain() {
+// Update the currently active tab and its domain
+function updateActiveTab() {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const url = new URL(tabs[0]?.url || '');
+    if (!tabs.length) return;
+
+    const tab = tabs[0];
+    const url = new URL(tab.url || ''); // Extract domain
     const domain = url.hostname;
 
-    if (activeDomain !== domain) {
-      if (activeDomain) clearInterval(intervalId); // Pause the previous domain timer
-
-      activeDomain = domain;
-      if (!timers[domain]) timers[domain] = 0;
-
-      startTimer(domain);
+    // Stop tracking the previous tab
+    if (activeTabId !== null && activeTabId !== tab.id) {
+      clearInterval(intervalId);
     }
+
+    activeTabId = tab.id;
+
+    // Start tracking the new tab's domain
+    if (!timers[domain]) timers[domain] = 0;
+
+    startTimer(domain, tab.id);
   });
 }
 
-function startTimer(domain) {
+// Start or continue tracking a domain
+function startTimer(domain, tabId) {
   intervalId = setInterval(() => {
     timers[domain] += 1;
+
+    // Save timers and send updates to the active tab
     chrome.storage.local.set({ timers });
-  }, 1000); // Increment every second
+    chrome.tabs.sendMessage(tabId, { action: 'update_timer', timers });
+  }, 1000);
 }

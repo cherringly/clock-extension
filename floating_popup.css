@@ -1,0 +1,13 @@
+#floating-popup {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border-radius: 8px;
+    z-index: 10000;
+  }
+  

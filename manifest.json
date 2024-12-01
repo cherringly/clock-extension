@@ -3,7 +3,7 @@
   "name": "Website Time Tracker",
   "version": "1.0",
   "description": "Track time spent on each website.",
-  "permissions": ["activeTab", "storage", "scripting"],
+  "permissions": ["activeTab", "storage", "scripting", "tabs"],
   "background": {
     "service_worker": "background.js"
   },
@@ -15,6 +15,13 @@
       "128": "icon.png"
     }
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["floating_popup.css"]
+    }
+  ],
   "icons": {
     "16": "icon.png",
     "48": "icon.png",

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const timeList = document.getElementById('time-list');
 
-  // Fetch the timers from storage
+  // Fetch and render timers from storage
   chrome.storage.local.get(['timers'], (result) => {
     const timers = result.timers || {};
     renderTimers(timers);
