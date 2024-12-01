@@ -1,27 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Website Time Tracker",
-  "version": "1.0",
-  "description": "Track time spent on each website.",
+  "name": "Enhanced Time Tracker",
+  "version": "1.1",
+  "description": "Track time spent on each website with a floating popup.",
   "permissions": ["activeTab", "storage", "scripting", "tabs"],
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icon.png",
       "48": "icon.png",
       "128": "icon.png"
     }
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["floating_popup.css"]
-    }
-  ],
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
