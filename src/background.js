@@ -1,6 +1,6 @@
-import { startTracking, switchDomain } from '../utils/timer.js';
+import { switchDomain, startTracking } from '../utils/timer.js';
 
-// Listen for active tab changes
+// Handle tab changes
 chrome.tabs.onActivated.addListener(async () => {
   const [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   if (activeTab && activeTab.url) {
@@ -10,7 +10,7 @@ chrome.tabs.onActivated.addListener(async () => {
   }
 });
 
-// Listen for tab updates
+// Handle tab URL updates
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (tab.active && changeInfo.url) {
     const url = new URL(changeInfo.url);
@@ -19,7 +19,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 });
 
-// Initialize tracking when the extension is installed or Chrome starts
+// Start tracking on extension startup
 chrome.runtime.onStartup.addListener(() => {
   startTracking();
 });
