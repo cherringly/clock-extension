@@ -1,42 +1,33 @@
-let currentDomain = null;
-let timers = {}; // Stores time spent for each domain
-let startTime = null;
+let activeDomain = null;
+let timers = {};
+let intervalId = null;
 
-chrome.tabs.onActivated.addListener(() => handleTabUpdate());
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') handleTabUpdate();
+chrome.tabs.onActivated.addListener(() => updateActiveDomain());
+chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.active) {
+    updateActiveDomain();
+  }
 });
 
-function handleTabUpdate() {
+function updateActiveDomain() {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs[0] || !tabs[0].url) return;
-
-    const url = new URL(tabs[0].url);
+    const url = new URL(tabs[0]?.url || '');
     const domain = url.hostname;
 
-    if (currentDomain && currentDomain !== domain) {
-      updateTimeForDomain(currentDomain);
-    }
+    if (activeDomain !== domain) {
+      if (activeDomain) clearInterval(intervalId); // Pause the previous domain timer
 
-    if (!timers[domain]) {
-      timers[domain] = 0; // Initialize time for the new domain
-    }
+      activeDomain = domain;
+      if (!timers[domain]) timers[domain] = 0;
 
-    currentDomain = domain;
-    startTime = Date.now(); // Start timing for the new domain
+      startTimer(domain);
+    }
   });
 }
 
-function updateTimeForDomain(domain) {
-  if (!timers[domain] || !startTime) return;
-  const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-  timers[domain] += timeSpent;
-  startTime = null;
+function startTimer(domain) {
+  intervalId = setInterval(() => {
+    timers[domain] += 1;
+    chrome.storage.local.set({ timers });
+  }, 1000); // Increment every second
 }
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'getTimers') {
-    if (currentDomain) updateTimeForDomain(currentDomain); // Update the current domain's time
-    sendResponse(timers);
-  }
-});
