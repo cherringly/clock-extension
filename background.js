@@ -1,30 +1,45 @@
-import { activeTabInstance } from './utils/active-tab.js';
+let activeTabId = null;
+let timers = {};
+let intervalId = null;
 
-const timers = {};
-let intervalId;
+// Listen for tab activation
+chrome.tabs.onActivated.addListener(updateActiveTab);
 
-chrome.tabs.onActivated.addListener(() => activeTabInstance.update());
+// Listen for tab updates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.active) {
-    activeTabInstance.update();
-  }
+  if (changeInfo.status === 'complete' && tab.active) updateActiveTab();
 });
 
-// Start tracking
-chrome.runtime.onInstalled.addListener(() => {
-  activeTabInstance.update();
-  intervalId = setInterval(trackTime, 1000);
-});
+// Update the currently active tab and its domain
+function updateActiveTab() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs.length) return;
 
-async function trackTime() {
-  await activeTabInstance.update();
-  const domain = activeTabInstance.domain;
+    const tab = tabs[0];
+    const url = new URL(tab.url || ''); // Extract domain
+    const domain = url.hostname;
 
-  if (!domain) return;
+    // Stop tracking the previous tab
+    if (activeTabId !== null && activeTabId !== tab.id) {
+      clearInterval(intervalId);
+    }
 
-  if (!timers[domain]) timers[domain] = 0;
-  timers[domain]++;
+    activeTabId = tab.id;
 
-  chrome.storage.local.set({ timers });
-  chrome.tabs.sendMessage(activeTabInstance.tabId, { action: 'update_timer', timers });
+    // Start tracking the new tab's domain
+    if (!timers[domain]) timers[domain] = 0;
+
+    startTimer(domain, tab.id);
+  });
+}
+
+// Start or continue tracking a domain
+function startTimer(domain, tabId) {
+  intervalId = setInterval(() => {
+    timers[domain] += 1;
+
+    // Save timers and send updates to the active tab
+    chrome.storage.local.set({ timers });
+    chrome.tabs.sendMessage(tabId, { action: 'update_timer', timers });
+  }, 1000);
 }
