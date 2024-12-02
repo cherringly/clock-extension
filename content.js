@@ -45,7 +45,7 @@ function updateFloatingPopup(time, color = null) {
   }
 
   // Update popup content
-  popup.textContent = `Time Tracking Active\n${formatTime(time)}`;
+  popup.textContent = `Time Spent: ${formatTime(time)}`;
 }
 
 // Format time into HH:MM:SS
