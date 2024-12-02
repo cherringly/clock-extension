@@ -1,12 +1,21 @@
-// Listen for timer updates and change the background color
+let lastColor = null; // Track the last color to avoid unnecessary DOM updates
+
+// Listen for timer updates and change the popup content and color
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'update_timer') {
-    updateFloatingPopupColor(message.color);
+    const { time, color } = message;
+
+    if (color && color !== lastColor) {
+      updateFloatingPopup(time, color);
+      lastColor = color;
+    } else {
+      updateFloatingPopup(time);
+    }
   }
 });
 
-// Update the floating popup's background color
-function updateFloatingPopupColor(color) {
+// Update or create the floating popup
+function updateFloatingPopup(time, color = null) {
   let popup = document.getElementById('floating-popup');
   
   // Create the popup if it doesn't exist
@@ -16,9 +25,10 @@ function updateFloatingPopupColor(color) {
     popup.style.position = 'fixed';
     popup.style.bottom = '10px';
     popup.style.right = '10px';
-    popup.style.width = '150px';
-    popup.style.height = '40px';
+    popup.style.width = '180px';
+    popup.style.height = '50px';
     popup.style.display = 'flex';
+    popup.style.flexDirection = 'column';
     popup.style.justifyContent = 'center';
     popup.style.alignItems = 'center';
     popup.style.color = '#fff';
@@ -29,7 +39,24 @@ function updateFloatingPopupColor(color) {
     document.body.appendChild(popup);
   }
   
-  // Update popup color
-  popup.style.backgroundColor = color;
-  popup.textContent = 'Time Tracking Active';
+  // Update popup color if provided
+  if (color) {
+    popup.style.backgroundColor = color;
+  }
+
+  // Update popup content
+  popup.textContent = `Time Tracking Active\n${formatTime(time)}`;
+}
+
+// Format time into HH:MM:SS
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+}
+
+// Pad numbers to two digits
+function pad(number) {
+  return number.toString().padStart(2, '0');
 }

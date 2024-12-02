@@ -35,6 +35,8 @@ function updateActiveTab() {
 
 // Start or continue tracking a domain
 function startTimer(domain, tabId) {
+  let currentColor = null; // Track the last color sent to prevent flicker
+
   intervalId = setInterval(() => {
     timers[domain] += 1;
 
@@ -44,16 +46,22 @@ function startTimer(domain, tabId) {
     const time = timers[domain];
     const color = getColorBasedOnTime(time);
 
-    chrome.tabs.sendMessage(tabId, { action: 'update_timer', time, color });
+    // Only send updates if the color changes
+    if (color !== currentColor) {
+      currentColor = color;
+      chrome.tabs.sendMessage(tabId, { action: 'update_timer', time, color });
+    } else {
+      chrome.tabs.sendMessage(tabId, { action: 'update_timer', time });
+    }
   }, 1000);
 }
 
 // Determine the color based on time spent
 function getColorBasedOnTime(time) {
-  if (time < 10) return '#109444'; // 0-10 mins
-  else if (time < 15) return '#80bc44'; // 10-20 mins
-  else if (time < 20) return '#ffcc0c'; // 20-30 mins
-  else if (time < 25) return '#f48c1c'; // 30-40 mins
-  else if (time < 30) return '#ef4623'; // 40-50 mins
+  if (time < 600) return '#109444'; // 0-10 mins
+  if (time < 1200) return '#80bc44'; // 10-20 mins
+  if (time < 1800) return '#ffcc0c'; // 20-30 mins
+  if (time < 2400) return '#f48c1c'; // 30-40 mins
+  if (time < 3000) return '#ef4623'; // 40-50 mins
   return '#bc2026'; // 50-60+ mins
 }
