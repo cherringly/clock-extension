@@ -1,4 +1,5 @@
 let activeTabId = null;
+let activeDomain = null;
 let timers = {};
 let intervalId = null;
 
@@ -16,30 +17,37 @@ function updateActiveTab() {
     if (!tabs.length) return;
 
     const tab = tabs[0];
-    const url = new URL(tab.url || ''); // Extract domain
+    const url = new URL(tab.url || '');
     const domain = url.hostname;
 
-    // Stop tracking the previous tab
-    if (activeTabId !== null && activeTabId !== tab.id) {
+    // If the domain hasn't changed, no need to restart the timer
+    if (activeDomain === domain) return;
+
+    // Stop the previous timer
+    if (intervalId) {
       clearInterval(intervalId);
+      intervalId = null;
     }
 
     activeTabId = tab.id;
+    activeDomain = domain;
 
-    // Start tracking the new tab's domain
+    // Start tracking the new domain
     if (!timers[domain]) timers[domain] = 0;
 
-    startTimer(domain, tab.id);
+    startTimer(domain);
   });
 }
 
 // Start or continue tracking a domain
-function startTimer(domain, tabId) {
+function startTimer(domain) {
   intervalId = setInterval(() => {
     timers[domain] += 1;
 
     // Save timers and send updates to the active tab
     chrome.storage.local.set({ timers });
-    chrome.tabs.sendMessage(tabId, { action: 'update_timer', timers });
-  }, 1000);
+    if (activeTabId !== null) {
+      chrome.tabs.sendMessage(activeTabId, { action: 'update_timer', timers });
+    }
+  }, 1000); // Increment every second
 }
