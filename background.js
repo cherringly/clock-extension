@@ -35,12 +35,8 @@ function updateActiveTab() {
 
 // Start or continue tracking a domain
 function startTimer(domain, tabId) {
-  let currentColor = null; // Track the last color sent to prevent flicker
-
   intervalId = setInterval(() => {
     timers[domain] += 1;
-
-    console.log(`Timer updated for ${domain}: ${timers[domain]}s`); // Debug
 
     // Save timers and send updates to the active tab
     chrome.storage.local.set({ timers });
