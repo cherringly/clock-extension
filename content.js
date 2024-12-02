@@ -40,6 +40,6 @@ chrome.runtime.onMessage.addListener((message) => {
     const timers = message.timers;
     const domain = window.location.hostname;
     const time = formatTime(timers[domain] || 0);
-    floatingPopup.textContent = `Time on this site: ${time}`;
+    floatingPopup.textContent = `Time on this site! ${time}`;
   }
 });
