@@ -1,42 +1,45 @@
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Content script loaded'); // Debug
+// Create and inject a floating popup
+const floatingPopup = document.createElement('div');
+floatingPopup.id = 'floating-popup';
+document.body.appendChild(floatingPopup);
 
-  // Create the floating popup
-  const floatingPopup = document.createElement('div');
-  floatingPopup.id = 'floating-popup';
-  floatingPopup.style.display = 'none'; // Initially hidden
-  document.body.appendChild(floatingPopup);
+// Initialize the floating popup with default content
+floatingPopup.textContent = "Tracking time...";
 
-  console.log('Floating popup created and appended'); // Debug
+// Apply styles dynamically to ensure it's always visible
+Object.assign(floatingPopup.style, {
+  position: 'fixed',
+  bottom: '20px',
+  right: '20px',
+  zIndex: '9999',
+  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  color: 'white',
+  padding: '10px',
+  borderRadius: '8px',
+  fontFamily: 'Arial, sans-serif',
+  fontSize: '14px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+});
 
-  // Listen for messages from the background script
-  chrome.runtime.onMessage.addListener((message) => {
-    console.log('Message received:', message); // Debug
+// Function to format time as HH:MM:SS
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+}
 
-    if (message.action === 'update_timer') {
-      const { time } = message;
+// Add zero padding
+function pad(num) {
+  return num.toString().padStart(2, '0');
+}
 
-      // Update floating popup visibility, color, and text
-      floatingPopup.style.display = 'block';
-      floatingPopup.style.backgroundColor = getColorForTime(time);
-      floatingPopup.textContent = `Time: ${formatTime(time)}`;
-    }
-  });
-
-  // Helper functions
-  function getColorForTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    if (mins < 10) return '#109444';
-    if (mins < 20) return '#80bc44';
-    if (mins < 30) return '#ffcc0c';
-    if (mins < 40) return '#f48c1c';
-    if (mins < 50) return '#ef4623';
-    return '#bc2026';
-  }
-
-  function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}m ${secs}s`;
+// Update the timer display in real-time
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === 'update_timer') {
+    const timers = message.timers;
+    const domain = window.location.hostname;
+    const time = formatTime(timers[domain] || 0);
+    floatingPopup.textContent = `Time on this site: ${time}`;
   }
 });

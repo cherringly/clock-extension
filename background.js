@@ -16,7 +16,7 @@ function updateActiveTab() {
     if (!tabs.length) return;
 
     const tab = tabs[0];
-    const url = new URL(tab.url || '');
+    const url = new URL(tab.url || ''); // Extract domain
     const domain = url.hostname;
 
     // Stop tracking the previous tab
@@ -35,6 +35,8 @@ function updateActiveTab() {
 
 // Start or continue tracking a domain
 function startTimer(domain, tabId) {
+  let currentColor = null; // Track the last color sent to prevent flicker
+
   intervalId = setInterval(() => {
     timers[domain] += 1;
 
@@ -42,12 +44,6 @@ function startTimer(domain, tabId) {
 
     // Save timers and send updates to the active tab
     chrome.storage.local.set({ timers });
-    chrome.tabs.sendMessage(tabId, { action: 'update_timer', domain, time: timers[domain] }, () => {
-      if (chrome.runtime.lastError) {
-        console.error('Error sending message:', chrome.runtime.lastError); // Debug
-      } else {
-        console.log('Message sent successfully'); // Debug
-      }
-    });
+    chrome.tabs.sendMessage(tabId, { action: 'update_timer', timers });
   }, 1000);
 }
