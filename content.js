@@ -1,45 +1,35 @@
-// Create and inject a floating popup
-const floatingPopup = document.createElement('div');
-floatingPopup.id = 'floating-popup';
-document.body.appendChild(floatingPopup);
-
-// Initialize the floating popup with default content
-floatingPopup.textContent = "Tracking time...";
-
-// Apply styles dynamically to ensure it's always visible
-Object.assign(floatingPopup.style, {
-  position: 'fixed',
-  bottom: '20px',
-  right: '20px',
-  zIndex: '9999',
-  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  color: 'white',
-  padding: '10px',
-  borderRadius: '8px',
-  fontFamily: 'Arial, sans-serif',
-  fontSize: '14px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-});
-
-// Function to format time as HH:MM:SS
-function formatTime(seconds) {
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-}
-
-// Add zero padding
-function pad(num) {
-  return num.toString().padStart(2, '0');
-}
-
-// Update the timer display in real-time
-chrome.runtime.onMessage.addListener((message) => {
+// Listen for timer updates and change the background color
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'update_timer') {
-    const timers = message.timers;
-    const domain = window.location.hostname;
-    const time = formatTime(timers[domain] || 0);
-    floatingPopup.textContent = `Time on this site: ${time}`;
+    updateFloatingPopupColor(message.color);
   }
 });
+
+// Update the floating popup's background color
+function updateFloatingPopupColor(color) {
+  let popup = document.getElementById('floating-popup');
+  
+  // Create the popup if it doesn't exist
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'floating-popup';
+    popup.style.position = 'fixed';
+    popup.style.bottom = '10px';
+    popup.style.right = '10px';
+    popup.style.width = '150px';
+    popup.style.height = '40px';
+    popup.style.display = 'flex';
+    popup.style.justifyContent = 'center';
+    popup.style.alignItems = 'center';
+    popup.style.color = '#fff';
+    popup.style.fontSize = '14px';
+    popup.style.borderRadius = '5px';
+    popup.style.zIndex = '9999';
+    popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    document.body.appendChild(popup);
+  }
+  
+  // Update popup color
+  popup.style.backgroundColor = color;
+  popup.textContent = 'Time Tracking Active';
+}

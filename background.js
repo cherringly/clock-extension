@@ -40,6 +40,20 @@ function startTimer(domain, tabId) {
 
     // Save timers and send updates to the active tab
     chrome.storage.local.set({ timers });
-    chrome.tabs.sendMessage(tabId, { action: 'update_timer', timers });
+
+    const time = timers[domain];
+    const color = getColorBasedOnTime(time);
+
+    chrome.tabs.sendMessage(tabId, { action: 'update_timer', time, color });
   }, 1000);
+}
+
+// Determine the color based on time spent
+function getColorBasedOnTime(time) {
+  if (time < 600) return '#109444'; // 0-10 mins
+  if (time < 1200) return '#80bc44'; // 10-20 mins
+  if (time < 1800) return '#ffcc0c'; // 20-30 mins
+  if (time < 2400) return '#f48c1c'; // 30-40 mins
+  if (time < 3000) return '#ef4623'; // 40-50 mins
+  return '#bc2026'; // 50-60+ mins
 }
