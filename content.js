@@ -1,18 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Content script loaded'); // Debug
+
+  // Create the floating popup
   const floatingPopup = document.createElement('div');
   floatingPopup.id = 'floating-popup';
+  floatingPopup.style.display = 'none'; // Initially hidden
   document.body.appendChild(floatingPopup);
 
+  console.log('Floating popup created and appended'); // Debug
+
+  // Listen for messages from the background script
   chrome.runtime.onMessage.addListener((message) => {
+    console.log('Message received:', message); // Debug
+
     if (message.action === 'update_timer') {
       const { time } = message;
 
-      // Change the color based on time
+      // Update floating popup visibility, color, and text
+      floatingPopup.style.display = 'block';
       floatingPopup.style.backgroundColor = getColorForTime(time);
       floatingPopup.textContent = `Time: ${formatTime(time)}`;
     }
   });
 
+  // Helper functions
   function getColorForTime(seconds) {
     const mins = Math.floor(seconds / 60);
     if (mins < 10) return '#109444';

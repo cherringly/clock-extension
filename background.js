@@ -38,8 +38,16 @@ function startTimer(domain, tabId) {
   intervalId = setInterval(() => {
     timers[domain] += 1;
 
+    console.log(`Timer updated for ${domain}: ${timers[domain]}s`); // Debug
+
     // Save timers and send updates to the active tab
     chrome.storage.local.set({ timers });
-    chrome.tabs.sendMessage(tabId, { action: 'update_timer', domain, time: timers[domain] });
+    chrome.tabs.sendMessage(tabId, { action: 'update_timer', domain, time: timers[domain] }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('Error sending message:', chrome.runtime.lastError); // Debug
+      } else {
+        console.log('Message sent successfully'); // Debug
+      }
+    });
   }, 1000);
 }
