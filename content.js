@@ -4,12 +4,17 @@ floatingPopup.id = 'floating-popup';
 floatingPopup.style.position = 'fixed';
 floatingPopup.style.left = `${Math.random() * (window.innerWidth - 150)}px`; // Random initial X position
 floatingPopup.style.top = `${Math.random() * (window.innerHeight - 50)}px`;  // Random initial Y position
+floatingPopup.style.width = '150px'; // Fixed width
+floatingPopup.style.height = '50px'; // Fixed height
 floatingPopup.style.padding = '10px';
 floatingPopup.style.backgroundColor = '#109444';
 floatingPopup.style.color = 'white';
 floatingPopup.style.borderRadius = '5px';
 floatingPopup.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
 floatingPopup.style.fontWeight = 'bold';
+floatingPopup.style.display = 'flex'; // Center text
+floatingPopup.style.alignItems = 'center';
+floatingPopup.style.justifyContent = 'center';
 floatingPopup.style.zIndex = '9999';
 floatingPopup.textContent = 'Time Tracking Active';
 document.body.appendChild(floatingPopup);
