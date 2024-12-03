@@ -28,11 +28,11 @@ function getColorByTime(seconds) {
   // const minutes = Math.floor(seconds / 60);
   const minutes = Math.floor(seconds);
 
-  if (minutes < 10) return '#109444';
-  if (minutes < 20) return '#80bc44';
-  if (minutes < 30) return '#ffcc0c';
-  if (minutes < 40) return '#f48c1c';
-  if (minutes < 50) return '#ef4623';
+  if (minutes < 5) return '#109444';
+  if (minutes < 10) return '#80bc44';
+  if (minutes < 15) return '#ffcc0c';
+  if (minutes < 20) return '#f48c1c';
+  if (minutes < 25) return '#ef4623';
   return '#bc2026';
 }
 
