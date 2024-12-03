@@ -1,4 +1,4 @@
-Website Time Tracker Chrome Extension
+#Website Time Tracker Chrome Extension
 Website Time Tracker is a Chrome extension that helps you track the time spent on each website you visit. The extension provides real-time updates in a floating popup on the page and displays a summary in the extension popup.
 
 Features
