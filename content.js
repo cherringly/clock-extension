@@ -1,7 +1,7 @@
 // Create and inject a floating popup
 const floatingPopup = document.createElement('div');
 floatingPopup.id = 'floating-popup';
-floatingPopup.style.position = 'fixed';
+floatingPopup.style.position = 'relative';
 floatingPopup.style.right = '10px';
 floatingPopup.style.bottom = '10px';
 floatingPopup.style.padding = '10px';
