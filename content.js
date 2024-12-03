@@ -36,6 +36,8 @@ setInterval(() => {
   // Apply new position
   floatingPopup.style.left = `${posX}px`;
   floatingPopup.style.top = `${posY}px`;
+  floatingPopup.style.right = `${posX+20}px`;
+  floatingPopup.style.bottom = `${posY+10}px`;
 }, 20); // Update every 20ms for smooth animation
 
 // Listen for timer updates from the background script
