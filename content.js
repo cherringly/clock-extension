@@ -71,7 +71,7 @@ function updateFloatingPopup(seconds) {
 
 // Determine color based on time ranges
 function getColorByTime(seconds) {
-  const minutes = Math.floor(seconds / 60);
+  const minutes = Math.floor(seconds);
 
   if (minutes < 5) return '#109444';
   if (minutes < 10) return '#80bc44';
