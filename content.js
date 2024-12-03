@@ -20,8 +20,8 @@ document.body.appendChild(floatingPopup);
 // Variables for bouncing logic
 let posX = window.innerWidth - floatingPopup.offsetWidth - 10; // Initial X position (bottom-right corner)
 let posY = window.innerHeight - floatingPopup.offsetHeight - 10; // Initial Y position (bottom-right corner)
-let velocityX = 2; // Horizontal velocity
-let velocityY = 2; // Vertical velocity
+let velocityX = 4; // Horizontal velocity
+let velocityY = 4; // Vertical velocity
 let isBouncing = false; // Flag to control when bouncing starts
 
 // Start bouncing movement after 20 seconds
