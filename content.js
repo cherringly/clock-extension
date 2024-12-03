@@ -19,7 +19,7 @@ function updateFloatingPopup(seconds) {
   const time = formatTime(seconds);
   const color = getColorByTime(seconds);
   // const size = getSizeByTime(seconds);
-  const size = 100;
+  const size = 50;
 
 
   floatingPopup.textContent = `Time on this site: ${time}`;
