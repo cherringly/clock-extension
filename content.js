@@ -9,7 +9,7 @@ floatingPopup.style.backgroundColor = '#109444';
 floatingPopup.style.color = 'white';
 floatingPopup.style.borderRadius = '5px';
 floatingPopup.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
-floatingPopup.style.fontWeight = 'bold';
+// floatingPopup.style.fontWeight = 'bold';
 floatingPopup.style.zIndex = '9999';
 floatingPopup.textContent = 'Time Tracking Active';
 document.body.appendChild(floatingPopup);
