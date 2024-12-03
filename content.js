@@ -6,7 +6,8 @@ const maxSize = 150; // Maximum size limit
 // Listen for timer updates and change the popup content, color, and size
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'update_timer') {
-    const { time, color } = message;
+    const time = message.time || 0; // Default to 0 if time is undefined
+    const color = message.color || lastColor; // Default to the last known color
 
     if (color && color !== lastColor) {
       updateFloatingPopup(time, color);
