@@ -1,9 +1,9 @@
 // Create and inject a floating popup
 const floatingPopup = document.createElement('div');
 floatingPopup.id = 'floating-popup';
-floatingPopup.style.position = 'relative';
-floatingPopup.style.right = '10px';
-floatingPopup.style.bottom = '10px';
+floatingPopup.style.position = 'fixed';
+floatingPopup.style.left = `${Math.random() * (window.innerWidth - 150)}px`; // Random initial X position
+floatingPopup.style.top = `${Math.random() * (window.innerHeight - 50)}px`;  // Random initial Y position
 floatingPopup.style.padding = '10px';
 floatingPopup.style.backgroundColor = '#109444';
 floatingPopup.style.color = 'white';
@@ -15,8 +15,8 @@ floatingPopup.textContent = 'Time Tracking Active';
 document.body.appendChild(floatingPopup);
 
 // Variables for bouncing logic
-let posX = Math.random() * (window.innerWidth - floatingPopup.offsetWidth); // Random initial X position
-let posY = Math.random() * (window.innerHeight - floatingPopup.offsetHeight); // Random initial Y position
+let posX = parseFloat(floatingPopup.style.left); // Initial X position
+let posY = parseFloat(floatingPopup.style.top);  // Initial Y position
 let velocityX = 2; // Horizontal velocity
 let velocityY = 2; // Vertical velocity
 
