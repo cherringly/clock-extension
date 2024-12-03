@@ -18,9 +18,7 @@ chrome.runtime.onMessage.addListener((message) => {
 function updateFloatingPopup(seconds) {
   const time = formatTime(seconds);
   const color = getColorByTime(seconds);
-  // const size = getSizeByTime(seconds);
-  const size = 50;
-
+  const size = getSizeByTime(seconds);
 
   floatingPopup.textContent = `Time on this site: ${time}`;
   floatingPopup.style.backgroundColor = color;
@@ -29,7 +27,6 @@ function updateFloatingPopup(seconds) {
 
 // Determine color based on time ranges
 function getSizeByTime(seconds) {
-  // const minutes = Math.floor(seconds / 60);
   const minutes = Math.floor(seconds);
   const size = 20;
 
@@ -43,7 +40,6 @@ function getSizeByTime(seconds) {
 
 // Determine size based on time ranges
 function getColorByTime(seconds) {
-  // const minutes = Math.floor(seconds / 60);
   const minutes = Math.floor(seconds);
 
   if (minutes < 5) return '#109444';
