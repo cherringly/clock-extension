@@ -27,7 +27,7 @@ let isBouncing = false; // Flag to control when bouncing starts
 // Start bouncing movement after 20 seconds
 setTimeout(() => {
   isBouncing = true;
-}, 20000); // 20 seconds
+}, 5000); // 20 seconds
 
 // Interval for bouncing logic
 setInterval(() => {
@@ -73,11 +73,11 @@ function updateFloatingPopup(seconds) {
 function getColorByTime(seconds) {
   const minutes = Math.floor(seconds);
 
-  if (minutes < 5) return '#109444';
-  if (minutes < 10) return '#80bc44';
-  if (minutes < 15) return '#ffcc0c';
-  if (minutes < 20) return '#f48c1c';
-  if (minutes < 25) return '#ef4623';
+  if (minutes < 2) return '#109444';
+  if (minutes < 4) return '#80bc44';
+  if (minutes < 6) return '#ffcc0c';
+  if (minutes < 8) return '#f48c1c';
+  if (minutes < 10) return '#ef4623';
   return '#bc2026';
 }
 
