@@ -1,60 +1,65 @@
-// Create and inject a floating popup
-const floatingPopup = document.createElement('div');
-floatingPopup.id = 'floating-popup';
-document.body.appendChild(floatingPopup);
+let lastColor = null; // Track the last color to avoid unnecessary DOM updates
+let currentSize = 50; // Starting size of the floating popup
+const sizeIncrement = 10; // Size increase every 5 seconds
+const maxSize = 150; // Maximum size limit
 
-// Listen for timer updates from the background script
-chrome.runtime.onMessage.addListener((message) => {
+// Listen for timer updates and change the popup content, color, and size
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'update_timer') {
-    const timers = message.timers;
-    const domain = window.location.hostname;
-    const time = timers[domain] || 0;
+    const { time, color } = message;
 
-    updateFloatingPopup(time);
+    if (color && color !== lastColor) {
+      updateFloatingPopup(time, color);
+      lastColor = color;
+    } else {
+      updateFloatingPopup(time);
+    }
   }
 });
 
-// Update the floating popup text and color
-function updateFloatingPopup(seconds) {
-  const time = formatTime(seconds);
-  const color = getColorByTime(seconds);
-  // const size = getSizeByTime(seconds);
-  const size = 100;
+// Update or create the floating popup
+function updateFloatingPopup(time, color = null) {
+  let popup = document.getElementById('floating-popup');
+  
+  // Create the popup if it doesn't exist
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'floating-popup';
+    popup.style.position = 'fixed';
+    popup.style.bottom = '10px';
+    popup.style.right = '10px';
+    popup.style.display = 'flex';
+    popup.style.flexDirection = 'column';
+    popup.style.justifyContent = 'center';
+    popup.style.alignItems = 'center';
+    popup.style.color = '#fff';
+    popup.style.fontSize = '14px';
+    popup.style.borderRadius = '5px';
+    popup.style.zIndex = '9999';
+    popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    popup.style.transition = 'all 0.3s ease'; // Smooth transitions for size changes
+    document.body.appendChild(popup);
 
+    // Start size animation
+    setInterval(() => {
+      if (currentSize < maxSize) {
+        currentSize += sizeIncrement;
+        popup.style.width = `${currentSize}px`;
+        popup.style.height = `${currentSize}px`;
+      }
+    }, 5000); // Increase size every 5 seconds
+  }
+  
+  // Update popup color if provided
+  if (color) {
+    popup.style.backgroundColor = color;
+  }
 
-  floatingPopup.textContent = `Time on this site: ${time}`;
-  floatingPopup.style.backgroundColor = color;
-  floatingPopup.style.padding = size;
+  // Update popup content
+  popup.textContent = `Time Tracking Active\n${formatTime(time)}`;
 }
 
-// Determine color based on time ranges
-function getSizeByTime(seconds) {
-  // const minutes = Math.floor(seconds / 60);
-  const minutes = Math.floor(seconds);
-  const size = 20;
-
-  if (minutes < 5) return (size+=5);
-  if (minutes < 10) return (size+=10);
-  if (minutes < 15) return (size+=15);
-  if (minutes < 20) return (size+=20);
-  if (minutes < 25) return (size+=25);
-  return (size+=30);
-}
-
-// Determine size based on time ranges
-function getColorByTime(seconds) {
-  // const minutes = Math.floor(seconds / 60);
-  const minutes = Math.floor(seconds);
-
-  if (minutes < 5) return '#109444';
-  if (minutes < 10) return '#80bc44';
-  if (minutes < 15) return '#ffcc0c';
-  if (minutes < 20) return '#f48c1c';
-  if (minutes < 25) return '#ef4623';
-  return '#bc2026';
-}
-
-// Format time as HH:MM:SS
+// Format time into HH:MM:SS
 function formatTime(seconds) {
   const hrs = Math.floor(seconds / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
@@ -62,8 +67,7 @@ function formatTime(seconds) {
   return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
 }
 
-// Add zero padding
-function pad(num) {
-  return num.toString().padStart(2, '0');
+// Pad numbers to two digits
+function pad(number) {
+  return number.toString().padStart(2, '0');
 }
-
