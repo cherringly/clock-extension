@@ -52,9 +52,6 @@ cd website-time-tracker
 * __Floating Popup__: Managed in content.js, dynamically created/updated in the active tab.
 * __Data Storage__: Uses chrome.storage.local to persist timers between browser sessions.
 
-## License
-This project is licensed under the MIT License.
-
 ## Contributing
 If you'd like to contribute:
 
