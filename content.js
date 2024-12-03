@@ -24,9 +24,17 @@ let posX = parseFloat(floatingPopup.style.left); // Initial X position
 let posY = parseFloat(floatingPopup.style.top);  // Initial Y position
 let velocityX = 2; // Horizontal velocity
 let velocityY = 2; // Vertical velocity
+let isBouncing = false; // Flag to control when bouncing starts
 
-// Start the bouncing movement
+// Start bouncing movement after 20 seconds
+setTimeout(() => {
+  isBouncing = true;
+}, 20000); // 20 seconds
+
+// Interval for bouncing logic
 setInterval(() => {
+  if (!isBouncing) return; // Do nothing if bouncing hasn't started
+
   // Update position
   posX += velocityX;
   posY += velocityY;
