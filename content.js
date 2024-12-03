@@ -18,11 +18,9 @@ chrome.runtime.onMessage.addListener((message) => {
 function updateFloatingPopup(seconds) {
   const time = formatTime(seconds);
   const color = getColorByTime(seconds);
-  const size = getSizeByTime(seconds);
 
   floatingPopup.textContent = `Time on this site: ${time}`;
   floatingPopup.style.backgroundColor = color;
-  floatingPopup.padding = size;
 }
 
 // Determine color based on time ranges
